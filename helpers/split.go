@@ -1,5 +1,13 @@
 package helpers
 
+func DoublePlay(playerCard1 int, playerCard2 int, dealerCard int) string {
+	if ShouldSplit(playerCard1, playerCard2, dealerCard) {
+		return SPLIT
+	}
+
+	return PlayHardHand([]int{playerCard1, playerCard2}, dealerCard)
+}
+
 func ShouldSplit(playerCard1 int, playerCard2 int, dealerCard int) bool {
 	if playerCard1 == 2 {
 		return dealerCard >= 4 && dealerCard <= 7

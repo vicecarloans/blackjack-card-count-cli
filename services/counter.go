@@ -1,16 +1,14 @@
 package services
 
 import (
+	"math"
 	helpers "vicecarloans/blackjack-card-count-cli/helpers"
 )
 
 type CounterService struct {
-	decksNum        int
-	penetrationRate float64
-	playerCount     int
-	myPosition      int
-	curCount        int
-	trueCount       int
+	remainingCardNum int
+	playerCount      int
+	curCount         int
 }
 
 const (
@@ -30,34 +28,52 @@ const (
 )
 
 func NewCounterService() *CounterService {
-	return &CounterService{}
+	return &CounterService{
+		curCount: 0,
+	}
 }
 
-func (cs *CounterService) SetDecksNum(decksNum int) {
-	cs.decksNum = decksNum
-}
-
-func (cs *CounterService) SetPenetrationRate(penetrationRate float64) {
-	cs.penetrationRate = penetrationRate
+func (cs *CounterService) Setup(decksNum int, penetrationRate float32) {
+	cs.remainingCardNum = int(float32(decksNum) * 52 * penetrationRate)
 }
 
 func (cs *CounterService) SetPlayerCount(playerCount int) {
 	cs.playerCount = playerCount
 }
 
-func (cs *CounterService) SetMyPosition(myPosition int) {
-	cs.myPosition = myPosition
+func (cs *CounterService) GetRecommendation(playerCards []int, dealerCard int) string {
+	if len(playerCards) == 2 {
+		if playerCards[0] == playerCards[1] {
+			return helpers.DoublePlay(playerCards[0], playerCards[1], dealerCard)
+		}
+
+		if playerCards[0] == ACE || playerCards[1] == ACE {
+			return helpers.PlaySoftHand(playerCards[0], playerCards[1], dealerCard)
+		}
+	}
+
+	return helpers.PlayHardHand(playerCards, dealerCard)
 }
 
-func (cs *CounterService) GetRecommendation(playerCards []int, dealersCard int) string {
-	if playerCards[0] == playerCards[1] {
-		return helpers.DoublePlay(playerCards[0], playerCards[1], dealersCard)
-	}
-	if playerCards[0] == ACE || playerCards[1] == ACE {
-
-	}
+func (cs *CounterService) GetTrueCount() float64 {
+	deck := math.Ceil(float64(cs.remainingCardNum) / 52)
+	return math.Ceil(float64(cs.curCount / int(deck)))
 }
 
-func (cs *CounterService) GetTrueCount() {
+func (cs *CounterService) GenerateRunningCount(playerCards []int) {
+	for _, card := range playerCards {
+		if card == TWO || card == THREE || card == FOUR || card == FIVE || card == SIX {
+			cs.curCount++
+		}
 
+		if card == TEN || card == JACK || card == QUEEN || card == KING {
+			cs.curCount--
+		}
+	}
+
+	cs.remainingCardNum -= len(playerCards)
+}
+
+func (cs *CounterService) GetCurCount() int {
+	return cs.curCount
 }
