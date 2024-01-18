@@ -7,7 +7,6 @@ import (
 
 type CounterService struct {
 	remainingCardNum int
-	playerCount      int
 	curCount         int
 }
 
@@ -35,10 +34,6 @@ func NewCounterService() *CounterService {
 
 func (cs *CounterService) Setup(decksNum int, penetrationRate float32) {
 	cs.remainingCardNum = int(float32(decksNum) * 52 * penetrationRate)
-}
-
-func (cs *CounterService) SetPlayerCount(playerCount int) {
-	cs.playerCount = playerCount
 }
 
 func (cs *CounterService) GetRecommendation(playerCards []int, dealerCard int) string {

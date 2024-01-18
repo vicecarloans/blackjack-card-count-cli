@@ -6,14 +6,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(versionCmd)
+type VersionCmd struct {
+	Command *cobra.Command
 }
 
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Print the version number of BlackJack Counter",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("BlackJack Counter v0.1 -- HEAD")
-	},
+func NewVersionCmd() *VersionCmd {
+	versionCmd := &cobra.Command{
+		Use:   "version",
+		Short: "Print the version number of BlackJack Counter",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("BlackJack Counter v0.1 -- HEAD")
+		},
+	}
+
+	return &VersionCmd{
+		Command: versionCmd,
+	}
 }
